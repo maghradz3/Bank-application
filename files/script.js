@@ -78,9 +78,10 @@ const displayMovements = function (movements) {
   });
 };
 
-const calcDisplaytBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} €`;
+const calcDisplaytBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  // acc.balance = balance;
+  labelBalance.textContent = `${acc.balance} €`;
 };
 
 const calcDisplaySummary = function (acc) {
@@ -118,6 +119,15 @@ const createUsernames = function (accs) {
 
 createUsernames(accounts);
 
+const updateUi = function (acc) {
+  //display movements
+  displayMovements(acc.movements);
+  //display balance
+  calcDisplaytBalance(acc);
+  //display summary
+  calcDisplaySummary(acc);
+};
+
 //Event Handlers
 let currentAccount;
 
@@ -141,14 +151,38 @@ btnLogin.addEventListener('click', function (e) {
     //Clear inputfields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
-    //display movements
-    displayMovements(currentAccount.movements);
-    //display balance
-    calcDisplaytBalance(currentAccount.movements);
-    //display summary
-    calcDisplaySummary(currentAccount);
+    updateUi(currentAccount);
   } else {
     labelWelcome.textContent = `Sorry Username or pin is incorrect :(`;
+  }
+});
+
+//Transfer money
+
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const reciverAcc = accounts.find(
+    acc => acc.userName === inputTransferTo.value
+  );
+
+  console.log(amount, reciverAcc);
+
+  if (
+    amount > 0 &&
+    currentAccount.balance >= amount &&
+    reciverAcc?.userName !== currentAccount.userName &&
+    reciverAcc
+  ) {
+    //Doing the transfer
+    console.log(`transfer valid`);
+    currentAccount.movements.push(-amount);
+    reciverAcc.movements.push(amount);
+    //UpdateUi
+    updateUi(currentAccount);
+
+    //CleanUp
+    inputTransferTo.value = inputTransferAmount.value = '';
   }
 });
 
