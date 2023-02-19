@@ -186,6 +186,48 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+//Request loans
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(acc => acc >= amount * 0.1)) {
+    console.log(`amount is correct`);
+    //Add positive movement
+    currentAccount.movements.push(amount);
+
+    //Update ui
+    updateUi(currentAccount);
+  }
+
+  //Clear input field
+  inputLoanAmount.value = '';
+});
+
+//Button Close
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  //Check creditials
+  if (
+    currentAccount.userName === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    console.log(`correct delete`);
+
+    const index = accounts.findIndex(
+      acc => acc.userName === currentAccount.userName
+    );
+    console.log(index);
+    //Dekete account
+    accounts.splice(index, 1);
+
+    //hide UI
+    containerApp.style.opacity = 0;
+  }
+  //Clear fields
+  inputCloseUsername.value = inputClosePin.value = '';
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
